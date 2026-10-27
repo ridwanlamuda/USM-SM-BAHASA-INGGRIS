@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ujian Saringan Masuk - Mata Uji Bahasa Inggris</title>
+<style>
+:root{
+  --primary:#4637d5;
+  --primary-dark:#3829bb;
+  --bg:#f4f7fb;
+  --card:#fff;
+  --text:#182230;
+  --muted:#68758a;
+  --border:#e2e8f0;
+  --success:#079669;
+  --warning:#f4b740;
+  --danger:#df4f4f;
+  --shadow:0 2px 10px rgba(31,41,55,.07);
+}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:flex;flex-direction:column;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text);padding-bottom:46px}
+header{
+  height:76px;background:var(--primary);color:#fff;padding:9px 7.5%;
+  display:flex;align-items:center;box-shadow:0 2px 7px rgba(0,0,0,.12)
+}
+.brand h1{font-size:23px;margin:0 0 2px;font-weight:800}
+.brand p{font-size:14px;margin:0;opacity:.78}
+.app{flex:1;width:100%;max-width:1250px;margin:18px auto 30px;display:grid;grid-template-columns:290px 1fr;gap:24px;padding:0 16px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow)}
+.sidebar{display:flex;flex-direction:column;gap:16px}
+.info,.nav{padding:17px}
+.card-title{font-size:14px;font-weight:800;margin:0 0 11px;text-transform:uppercase}
+.line{height:1px;background:var(--border);margin-bottom:14px}
+label{font-size:13px;color:#4d5b6e}
+input[type=text]{width:100%;margin-top:7px;padding:11px 12px;border:1px solid #ccd6e3;border-radius:8px;font-size:14px;outline:none}
+input[type=text]:focus{border-color:var(--primary)}
+.counter{float:right;background:#eef2f7;color:#718096;padding:4px 8px;border-radius:5px;font-size:12px}
+.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.qnav{
+  height:38px;border:1px solid #dfe6ef;background:#fff;border-radius:8px;
+  font-weight:700;color:#30415a;cursor:pointer
+}
+.qnav:hover{border-color:var(--primary)}
+.qnav.active{border:2px solid #5b4df0;color:var(--primary);background:#fafaff}
+.qnav.answered{background:#e9f8f3;border-color:#9cddc9;color:#087b5a}
+.qnav.result-correct{background:#09a66f;border-color:#09a66f;color:#fff}
+.qnav.result-wrong{background:#f2385a;border-color:#f2385a;color:#fff}
+.qnav.result-correct.active,.qnav.result-wrong.active{color:#fff}
+.qnav.result-correct.active{box-shadow:0 0 0 2px #5b4df0 inset}
+.qnav.result-wrong.active{box-shadow:0 0 0 2px #5b4df0 inset}
+.finish{
+  width:100%;border:0;background:var(--success);color:#fff;border-radius:10px;
+  padding:14px;font-size:15px;font-weight:800;cursor:pointer;box-shadow:0 3px 7px rgba(7,150,105,.2)
+}
+.finish:hover{filter:brightness(.96)}
+.finish.finished{
+  background:#9aa3ad;
+  border-color:#9aa3ad;
+  color:#fff;
+  cursor:not-allowed;
+  box-shadow:none;
+}
+.finish.finished:hover{filter:none}
+.main{min-width:0}
+.question-card{overflow:hidden}
+.qhead{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.qtitle{font-size:18px;color:var(--primary);font-weight:800}
+.status{background:#fff4d2;color:#a56b00;border-radius:18px;padding:6px 12px;font-size:12px;font-weight:700}
+.status.done{background:#e9f8f3;color:#087b5a}
+.qbody{padding:30px 24px 24px;min-height:460px}
+.question-text{font-size:17px;line-height:1.7;margin:0 0 25px}
+.options{display:flex;flex-direction:column;gap:11px}
+.option{
+  border:1px solid #dfe6ef;border-radius:11px;padding:15px 16px;
+  display:flex;align-items:flex-start;gap:12px;cursor:pointer;transition:.15s;background:#fff
+}
+.option:hover{border-color:#aaa0ff;background:#fbfaff}
+.option.selected{border:2px solid #5b4df0;background:#f8f7ff}
+.option input{margin-top:3px;accent-color:var(--primary);transform:scale(1.08)}
+.letter{width:28px;height:28px;border:1px solid #d7e0ea;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex:none}
+.option.selected .letter{border-color:var(--primary);color:var(--primary)}
+.qfooter{border-top:1px solid var(--border);padding:15px 24px;display:flex;justify-content:space-between}
+.navbtn{border:1px solid #dbe3ec;background:#fff;color:#516174;padding:10px 17px;border-radius:8px;cursor:pointer;font-weight:700}
+.navbtn.primary{background:var(--primary);border-color:var(--primary);color:#fff}
+.navbtn:disabled{opacity:.4;cursor:not-allowed}
+.result{display:none;padding:0;overflow:hidden}
+.result.show{display:block}
+.result-hero{
+  background:linear-gradient(135deg,#4637d5 0%,#5b4df0 55%,#6a5cf6 100%);
+  color:#fff;padding:34px 34px 30px;position:relative;overflow:hidden
+}
+.result-hero:after{
+  content:"";position:absolute;width:230px;height:230px;border-radius:50%;
+  right:-75px;top:-105px;background:rgba(255,255,255,.09)
+}
+.result-kicker{font-size:12px;text-transform:uppercase;letter-spacing:1.5px;font-weight:800;opacity:.8;margin:0 0 7px}
+.result-hero h2{font-size:27px;margin:0 0 8px}
+.result-name{margin:0;font-size:14px;opacity:.9}
+.result-main{display:flex;align-items:center;gap:28px;margin-top:26px;position:relative;z-index:1}
+.score-ring{
+  width:112px;height:112px;border-radius:50%;background:rgba(255,255,255,.14);
+  border:7px solid rgba(255,255,255,.88);display:flex;flex-direction:column;
+  justify-content:center;align-items:center;flex:none;box-shadow:0 8px 24px rgba(29,20,130,.2)
+}
+.score-ring .score{font-size:38px;line-height:1;font-weight:900;margin:0}
+.score-ring small{font-size:11px;margin-top:5px;opacity:.85}
+.result-summary h3{font-size:17px;margin:0 0 6px}
+.result-summary p{margin:0;font-size:14px;opacity:.9}
+.result-content{padding:25px 30px 30px}
+.result-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}
+.stat{
+  border:1px solid var(--border);background:#fff;border-radius:12px;padding:15px;
+  box-shadow:0 2px 8px rgba(31,41,55,.04)
+}
+.stat-label{font-size:12px;color:var(--muted);margin-bottom:5px}
+.stat-value{font-size:21px;font-weight:850;color:#172033}
+.result-box{
+  background:#f7f8fc;border:1px solid var(--border);border-radius:12px;
+  padding:14px 16px;margin-bottom:24px;font-size:13px;color:#526174
+}
+.review{margin-top:0}
+.review-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.review-header h3{font-size:17px;margin:0}
+.review-header span{font-size:12px;color:var(--muted)}
+.review-item{
+  padding:13px 14px;border:1px solid var(--border);border-radius:10px;
+  margin:8px 0;background:#fff;font-size:13px;line-height:1.55
+}
+.review-description{margin:6px 0 7px;padding:8px 10px;border-radius:7px;background:#f7f8fc;color:#59677a;font-size:12.5px;line-height:1.55}
+.correct{color:var(--success);font-weight:800}
+.wrong{color:var(--danger);font-weight:800}
+.reset{margin-top:20px;width:100%;background:var(--primary)}
+@media(max-width:800px){
+  .result-main{align-items:flex-start}
+  .result-stats{grid-template-columns:1fr}
+  .result-content{padding:20px 16px 24px}
+  .result-hero{padding:26px 20px}
+}
+.math{font-family:Cambria,Georgia,serif;font-size:1.05em}
+table{border-collapse:collapse;margin:14px 0;font-size:15px}
+td,th{border:1px solid #ccd5df;padding:7px 13px;text-align:center}
+@media(max-width:800px){
+  header{padding:10px 18px;height:auto}
+  .app{grid-template-columns:1fr;padding:0 10px}
+  .sidebar{order:2}
+  .main{order:1}
+  .qbody{min-height:auto;padding:22px 16px}
+  .qhead{padding:16px}
+  .qfooter{padding:12px 16px}
+}
+
+/* Professional result report */
+.result-report-note{font-size:12px;color:#64748b;margin-top:8px}
+
+.site-footer{
+  position:fixed;left:0;right:0;bottom:0;z-index:1000;
+  background:#fff;border-top:1px solid var(--border);
+  padding:14px 20px;text-align:center;color:#68758a;font-size:12px;
+  box-shadow:0 -2px 8px rgba(31,41,55,.06);
+}
+.timer-card{padding:17px}
+.timer-value{font-size:30px;font-weight:900;letter-spacing:1px;color:var(--primary);text-align:center;margin:2px 0 5px}
+.timer-note{text-align:center;font-size:11px;color:var(--muted)}
+.timer-card.danger .timer-value{color:var(--danger)}
+.timer-card.danger .timer-note{color:var(--danger);font-weight:800}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <h1>Mata Pelajaran - Bahasa Inggris</h1>
+    <p>Ujian Saringan Masuk - SMA Sekolah Alam Bandung</p>
+  </div>
+</header>
+
+<div class="app">
+  <aside class="sidebar">
+    <section class="card info">
+      <h2 class="card-title">Informasi Siswa</h2>
+      <div class="line"></div>
+      <label for="student">Nama Lengkap</label>
+      <input id="student" type="text" placeholder="Masukkan nama...">
+    </section>
+
+    <section class="card timer-card" id="timerCard">
+      <h2 class="card-title">Waktu Ujian</h2>
+      <div class="line"></div>
+      <div class="timer-value" id="timer">120:00</div>
+      <div class="timer-note" id="timerNote">Waktu tersisa</div>
+    </section>
+
+    <section class="card nav">
+      <h2 class="card-title">Navigasi Soal <span class="counter" id="counter">0 / 30 Terjawab</span></h2>
+      <div class="line"></div>
+      <div class="grid" id="qnav"></div>
+    </section>
+
+    <button class="finish" onclick="finishQuiz()">✓ &nbsp; Selesaikan & Lihat Nilai</button>
+  </aside>
+
+  <main class="main">
+    <section class="card question-card" id="quizCard">
+      <div class="qhead">
+        <div class="qtitle" id="qtitle">Soal Nomor 1</div>
+        <div class="status" id="status">Belum Dijawab</div>
+      </div>
+      <div class="qbody" id="qbody"></div>
+      <div class="qfooter">
+        <button class="navbtn" id="prev" onclick="prevQuestion()">← Sebelumnya</button>
+        <button class="navbtn primary" id="next" onclick="nextQuestion()">Selanjutnya →</button>
+      </div>
+    </section>
+
+    <section class="card result" id="result"></section>
+  </main>
+</div>
+
+<footer class="site-footer">© 2026 SMA Sekolah Alam Bandung - Ujian Saringan Masuk</footer>
+
+<script>
+let timeRemaining = 120 * 60;
+let timerInterval = null;
+let timerStarted = false;
+
+function formatTime(totalSeconds){
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return String(minutes).padStart(2,'0') + ':' + String(seconds).padStart(2,'0');
+}
+
+function updateTimer(){
+  const timer=document.getElementById('timer');
+  const card=document.getElementById('timerCard');
+  const note=document.getElementById('timerNote');
+  if(timer) timer.textContent=formatTime(Math.max(0,timeRemaining));
+  if(timeRemaining<=300){
+    card?.classList.add('danger');
+    if(note && !examFinished) note.textContent='Waktu hampir habis';
+  }
+  if(timeRemaining<=0){
+    clearInterval(timerInterval);
+    timerInterval=null;
+    if(note) note.textContent='Waktu habis';
+    finishQuiz(true);
+  }
+}
+
+function startTimer(){
+  if(timerStarted) return;
+  timerStarted=true;
+  updateTimer();
+  timerInterval=setInterval(()=>{
+    if(examFinished){ clearInterval(timerInterval); timerInterval=null; return; }
+    timeRemaining--;
+    updateTimer();
+  },1000);
+}
+
+const questions = [{"q":"<b>Text 1</b><br><br>Many high schools have started implementing school gardening programs to encourage students to care for the environment. These programs allow students to grow vegetables, observe plant growth, and learn about sustainable agriculture. In addition, gardening activities can help students develop teamwork and responsibility.<br><br>However, maintaining a school garden requires consistent effort. Students must water the plants regularly, remove weeds, and protect crops from pests. Without proper planning and cooperation, the garden may not produce satisfactory results. Therefore, schools should integrate gardening activities into their learning schedules rather than treating them as occasional extracurricular activities.<br><br><b>1. What is the main idea of the text?</b>","o":["School gardens are too expensive for most schools to maintain.","Gardening programs provide educational benefits but require proper management.","Students should spend more time studying agriculture than other subjects.","Sustainable agriculture can only be learned through outdoor activities.","School gardening programs are less effective than classroom lessons."],"a":1},{"q":"<b>Text 1</b><br><br>Many high schools have started implementing school gardening programs to encourage students to care for the environment. These programs allow students to grow vegetables, observe plant growth, and learn about sustainable agriculture. In addition, gardening activities can help students develop teamwork and responsibility.<br><br>However, maintaining a school garden requires consistent effort. Students must water the plants regularly, remove weeds, and protect crops from pests. Without proper planning and cooperation, the garden may not produce satisfactory results. Therefore, schools should integrate gardening activities into their learning schedules rather than treating them as occasional extracurricular activities.<br><br><b>2. According to the text, why should gardening activities be integrated into learning schedules?</b>","o":["To reduce the number of subjects students must study.","To ensure that students can avoid classroom assignments.","To make gardening a consistent and organized learning activity.","To allow students to sell vegetables to the local community.","To replace all extracurricular activities with environmental projects."],"a":2},{"q":"<b>Text 1</b><br><br>Many high schools have started implementing school gardening programs to encourage students to care for the environment. These programs allow students to grow vegetables, observe plant growth, and learn about sustainable agriculture. In addition, gardening activities can help students develop teamwork and responsibility.<br><br>However, maintaining a school garden requires consistent effort. Students must water the plants regularly, remove weeds, and protect crops from pests. Without proper planning and cooperation, the garden may not produce satisfactory results. Therefore, schools should integrate gardening activities into their learning schedules rather than treating them as occasional extracurricular activities.<br><br><b>3. The word “consistent” in the second paragraph is closest in meaning to ....</b>","o":["occasional","irregular","continuous","unnecessary","temporary"],"a":2},{"q":"<b>Text 2</b><br><br>Last semester, a group of students conducted a campaign to reduce plastic waste at their school. They placed recycling bins in several locations and created posters explaining the environmental impact of single-use plastics. Initially, only a few students participated in the program.<br><br>Instead of abandoning their efforts, the campaign team organized short presentations in classrooms and invited students to bring reusable bottles. After several weeks, participation increased significantly. The project demonstrated that environmental awareness alone was not always enough; people also needed practical opportunities and encouragement to change their habits.<br><br><b>4. What is the communicative purpose of the text?</b>","o":["To describe the physical appearance of recycling facilities.","To retell a past experience and highlight its lesson.","To explain how plastic is manufactured in factories.","To persuade readers to stop attending school campaigns.","To compare different types of environmental pollution."],"a":1},{"q":"<b>Text 2</b><br><br>Last semester, a group of students conducted a campaign to reduce plastic waste at their school. They placed recycling bins in several locations and created posters explaining the environmental impact of single-use plastics. Initially, only a few students participated in the program.<br><br>Instead of abandoning their efforts, the campaign team organized short presentations in classrooms and invited students to bring reusable bottles. After several weeks, participation increased significantly. The project demonstrated that environmental awareness alone was not always enough; people also needed practical opportunities and encouragement to change their habits.<br><br><b>5. What did the campaign team do when participation was initially low?</b>","o":["They removed all recycling bins from the school.","They stopped producing educational materials.","They changed their approach by giving presentations and encouraging reusable bottles.","They asked students to pay a fine for using plastic.","They transferred the campaign to another school."],"a":2},{"q":"<b>Text 2</b><br><br>Last semester, a group of students conducted a campaign to reduce plastic waste at their school. They placed recycling bins in several locations and created posters explaining the environmental impact of single-use plastics. Initially, only a few students participated in the program.<br><br>Instead of abandoning their efforts, the campaign team organized short presentations in classrooms and invited students to bring reusable bottles. After several weeks, participation increased significantly. The project demonstrated that environmental awareness alone was not always enough; people also needed practical opportunities and encouragement to change their habits.<br><br><b>6. What can be inferred from the campaign's results?</b>","o":["Environmental campaigns are successful only when students receive rewards.","Students generally refuse to participate in school activities.","Providing practical actions and encouragement can help change people's habits.","Recycling bins are unnecessary when posters are available.","Environmental awareness has no influence on student behavior."],"a":2},{"q":"<b>Text 3</b><br><br>Urban trees play an important role in maintaining environmental quality. They provide shade, absorb carbon dioxide, and help reduce the temperature in densely populated areas. Their roots can also improve water absorption, reducing surface runoff during heavy rainfall.<br><br>Nevertheless, planting trees in cities requires careful consideration. Some species have roots that may damage pavements or underground pipes, while others cannot survive in polluted environments. City planners should therefore select appropriate species and provide adequate maintenance to ensure that urban trees deliver long-term benefits.<br><br><b>7. What is the main purpose of the text?</b>","o":["To narrate the history of urban development.","To describe the appearance of different tree species.","To explain the benefits of urban trees and the importance of proper planning.","To argue that all city buildings should be replaced by forests.","To instruct readers on how to cut down damaged trees."],"a":2},{"q":"<b>Text 3</b><br><br>Urban trees play an important role in maintaining environmental quality. They provide shade, absorb carbon dioxide, and help reduce the temperature in densely populated areas. Their roots can also improve water absorption, reducing surface runoff during heavy rainfall.<br><br>Nevertheless, planting trees in cities requires careful consideration. Some species have roots that may damage pavements or underground pipes, while others cannot survive in polluted environments. City planners should therefore select appropriate species and provide adequate maintenance to ensure that urban trees deliver long-term benefits.<br><br><b>8. Which of the following is mentioned as a benefit of urban trees?</b>","o":["They eliminate all forms of air pollution.","They prevent every type of natural disaster.","They increase the amount of underground traffic.","They help reduce surface runoff during heavy rainfall.","They remove the need for urban drainage systems."],"a":3},{"q":"<b>Text 3</b><br><br>Urban trees play an important role in maintaining environmental quality. They provide shade, absorb carbon dioxide, and help reduce the temperature in densely populated areas. Their roots can also improve water absorption, reducing surface runoff during heavy rainfall.<br><br>Nevertheless, planting trees in cities requires careful consideration. Some species have roots that may damage pavements or underground pipes, while others cannot survive in polluted environments. City planners should therefore select appropriate species and provide adequate maintenance to ensure that urban trees deliver long-term benefits.<br><br><b>9. The word “Nevertheless” in the second paragraph indicates ....</b>","o":["addition","contrast","cause","sequence","conclusion"],"a":1},{"q":"<b>10. If the school ______ more recycling bins last year, students would have had more opportunities to separate their waste.</b>","o":["provides","provided","had provided","has provided","would provide"],"a":2},{"q":"<b>11. The science project ______ by the students before the exhibition began.</b>","o":["completed","has completed","was completing","had been completed","is completed"],"a":3},{"q":"<b>12. Rina said, “I am preparing my presentation now.” Which sentence correctly reports Rina's statement?</b>","o":["Rina said that she is preparing my presentation then.","Rina said that she was preparing her presentation then.","Rina said that I was preparing her presentation now.","Rina says that she prepared my presentation then.","Rina said that she has prepared her presentation now."],"a":1},{"q":"<b>13. The students ______ submitted their assignments may leave the classroom after checking their work.</b>","o":["which","whose","whom","who","where"],"a":3},{"q":"<b>14. The teacher suggested ______ the research findings before writing the final report.</b>","o":["review","to review","reviewing","reviewed","to reviewing"],"a":2},{"q":"<b>15. Neither the principal nor the teachers ______ satisfied with the initial results of the program.</b>","o":["is","was","has","are","be"],"a":3},{"q":"<b>16. The school has implemented a new policy ______ students can reduce their use of disposable plastic.</b>","o":["although","so that","unless","whereas","despite"],"a":1},{"q":"<b>17. By the time the guests arrived, the students ______ all the exhibition materials.</b>","o":["prepare","have prepared","had prepared","will prepare","are preparing"],"a":2},{"q":"<b>18. Which sentence uses the passive voice correctly?</b>","o":["The committee has selected three students for the competition.","Three students have selected the committee for the competition.","Three students have been selected for the competition by the committee.","The committee has been selecting three students for the competition.","Three students were selecting by the committee for the competition."],"a":2},{"q":"<b>19. Your friend says, “I think students should be allowed to choose some of their own learning projects.” Which response expresses partial agreement?</b>","o":["I completely disagree with everything you have said.","You are absolutely wrong about student learning.","I see your point, although some projects may need teacher guidance.","I do not understand why students should study.","That is impossible, and there is nothing to discuss."],"a":2},{"q":"<b>20. Your classmate looks worried before giving a presentation. What is the most appropriate expression to encourage them?</b>","o":["You should have prepared everything yesterday.","Don't worry. Take a deep breath and do your best.","I knew you would fail the presentation.","You had better cancel the presentation immediately.","It is your fault that you feel nervous."],"a":1},{"q":"<b>21. Which sentence expresses a suggestion?</b>","o":["Would you mind closing the window?","I am certain that the window is closed.","You should discuss the problem with your teacher.","The window was closed this morning.","Why did you close the window?"],"a":2},{"q":"<b>22. A student wants to borrow a dictionary from a classmate. Which expression is the most polite?</b>","o":["Give me your dictionary now.","You must lend me your dictionary.","I am taking your dictionary because I need it.","Could I borrow your dictionary for a moment, please?","You do not need that dictionary, do you?"],"a":3},{"q":"<b>23. Your group has completed a presentation, but one member has not finished the visual materials. What is the most appropriate response?</b>","o":["We should blame the member who has not finished.","Let's help finish the visual materials so we can submit the presentation on time.","We should cancel the presentation without discussing it.","Nobody needs to finish the materials anymore.","We can submit the presentation even if it is incomplete."],"a":1},{"q":"<b>24. The school introduced a new policy to ______ students' awareness of environmental issues.</b>","o":["raise","rise","arise","arise from","risen"],"a":0},{"q":"<b>25. The research findings were reliable because they were based on ______ evidence collected over several months.</b>","o":["misleading","accidental","insufficient","substantial","imaginary"],"a":3},{"q":"<b>26. Choose the sentence with the correct parallel structure.</b>","o":["The program aims to reduce waste, conserving energy, and the protection of wildlife.","The program aims to reduce waste, conserve energy, and protect wildlife.","The program aims to reducing waste, conserve energy, and protecting wildlife.","The program aims at reduce waste, conserving energy, and protect wildlife.","The program aims to reduce waste, energy conservation, and protecting wildlife."],"a":1},{"q":"<b>27. Which sentence is grammatically correct?</b>","o":["Despite the weather was bad, the students continued their research.","Although of the bad weather, the students continued their research.","Despite the bad weather, the students continued their research.","In spite the weather was bad, the students continued their research.","Despite of the weather was bad, the students continued their research."],"a":2},{"q":"<b>28. Which sentence is the best topic sentence for a paragraph about the benefits of reading?</b>","o":["Yesterday, I borrowed two books from the school library.","Reading regularly can improve vocabulary, critical thinking, and general knowledge.","Some books have blue covers, while others have red covers.","My friend prefers reading novels on weekends.","The library closes at four o'clock every afternoon."],"a":1},{"q":"<b>29. Which sentence is the best paraphrase of the following statement?</b><br><br><i>“Regular physical activity can improve concentration and support students' academic performance.”</i>","o":["Students who exercise regularly may concentrate better and perform more effectively in their studies.","Students should stop studying and spend all their time exercising.","Physical activity has no relationship with students' concentration.","Academic performance is determined entirely by physical strength.","Students who do not exercise will always fail their examinations."],"a":0},{"q":"<b>30. Read the following argument.</b><br><br>“Schools should provide more opportunities for students to participate in group projects. Through collaboration, students can exchange ideas, solve problems together, and develop communication skills. However, teachers should ensure that every member contributes fairly so that group work remains effective.”<br><br><b>Which statement best represents the writer's position?</b>","o":["Group projects should be eliminated because students cannot work independently.","Students should complete every assignment without communicating with others.","Group projects are beneficial, provided that teachers ensure fair participation.","Teachers should allow only the most intelligent students to lead all group projects.","Communication skills are less important than individual examination scores."],"a":2}];
+
+let current=0;
+let answers=Array(questions.length).fill(null);
+let resultMode=false;
+let finalCorrect=0;
+let examFinished=false;
+const letters=['A','B','C','D','E'];
+
+function renderNav(){
+  const nav=document.getElementById('qnav');
+  nav.innerHTML='';
+  questions.forEach((item,i)=>{
+    const b=document.createElement('button');
+    let cls='qnav';
+    if(i===current) cls+=' active';
+
+    if(resultMode){
+      const isCorrect=item.multi ? sameSet(answers[i],item.a) : answers[i]===item.a;
+      if(isCorrect) cls+=' result-correct';
+      else cls+=' result-wrong';
+    }else if(answers[i]!==null){
+      cls+=' answered';
+    }
+
+    b.className=cls;
+    b.textContent=i+1;
+    b.onclick=()=>{
+      current=i;
+      if(!resultMode) renderQuestion();
+    };
+    nav.appendChild(b);
+  });
+
+  const counter=document.getElementById('counter');
+  if(resultMode){
+    counter.textContent=`${finalCorrect} / ${questions.length} Benar`;
+  }else{
+    const n=answers.filter(x=>x!==null).length;
+    counter.textContent=`${n} / ${questions.length} Terjawab`;
+  }
+}
+function renderQuestion(){
+  const item=questions[current];
+  document.getElementById('qtitle').textContent=`Soal Nomor ${current+1}`;
+  const done=answers[current]!==null;
+  const status=document.getElementById('status');
+  status.textContent=done?'Sudah Dijawab':'Belum Dijawab';
+  status.className='status'+(done?' done':'');
+  const body=document.getElementById('qbody');
+  let options='';
+  item.o.forEach((opt,i)=>{
+    let checked=item.multi ? (Array.isArray(answers[current]) && answers[current].includes(i)) : answers[current]===i;
+    options+=`<label class="option ${checked?'selected':''}">
+      <input type="${item.multi?'checkbox':'radio'}" name="answer" value="${i}" ${checked?'checked':''} onchange="selectAnswer(${i})">
+      <span class="letter">${letters[i]}</span><span>${opt}</span>
+    </label>`;
+  });
+  body.innerHTML=`<p class="question-text">${item.q}</p><div class="options">${options}</div>`;
+  document.getElementById('prev').disabled=current===0;
+  document.getElementById('next').textContent=current===questions.length-1?'Selesai →':'Selanjutnya →';
+  renderNav();
+}
+function selectAnswer(i){
+  const item=questions[current];
+  if(item.multi){
+    let arr=Array.isArray(answers[current])?[...answers[current]]:[];
+    const idx=arr.indexOf(i);
+    if(idx>=0) arr.splice(idx,1); else arr.push(i);
+    arr.sort((a,b)=>a-b);
+    answers[current]=arr.length?arr:null;
+  }else answers[current]=i;
+  renderQuestion();
+}
+function prevQuestion(){if(current>0){current--;renderQuestion()}}
+function nextQuestion(){
+  if(current<questions.length-1){current++;renderQuestion()}
+  else finishQuiz();
+}
+function sameSet(a,b){
+  if(!Array.isArray(a)||!Array.isArray(b)||a.length!==b.length)return false;
+  return a.every((v,i)=>v===b[i]);
+}
+const descriptions = ["Menentukan gagasan utama teks tentang manfaat program kebun sekolah sekaligus kebutuhan pengelolaan yang baik.","Menafsirkan alasan kegiatan berkebun perlu dimasukkan ke jadwal pembelajaran secara teratur.","Menentukan makna kosakata berdasarkan konteks kalimat dalam teks.","Menentukan tujuan komunikatif teks recount yang menceritakan pengalaman kampanye lingkungan dan pelajarannya.","Mengidentifikasi tindakan yang dilakukan tim kampanye ketika partisipasi siswa pada awalnya rendah.","Menarik inferensi tentang cara mendorong perubahan kebiasaan melalui kesempatan praktis dan dukungan.","Menentukan tujuan teks yang menjelaskan manfaat pohon kota serta pentingnya perencanaan.","Mengidentifikasi manfaat pohon kota yang disebutkan secara eksplisit dalam teks.","Mengenali fungsi kata penghubung yang menunjukkan pertentangan.","Menggunakan third conditional untuk membicarakan kondisi masa lalu yang tidak terjadi dan hasil hipotetisnya.","Memilih bentuk past perfect passive untuk tindakan yang telah selesai sebelum peristiwa lampau lainnya.","Mengubah kalimat langsung menjadi reported speech dengan penyesuaian tense, pronoun, dan keterangan waktu.","Memilih relative pronoun yang tepat untuk merujuk pada orang sebagai subjek klausa.","Menggunakan pola kata kerja suggest yang diikuti gerund.","Menyesuaikan subject-verb agreement pada pola neither...nor dengan subjek terdekat.","Menggunakan so that untuk menyatakan tujuan.","Menggunakan past perfect untuk tindakan yang selesai sebelum peristiwa lampau lainnya.","Mengidentifikasi bentuk passive voice yang benar dalam present perfect.","Memilih ungkapan yang menyatakan persetujuan sebagian secara santun.","Memilih ungkapan yang tepat untuk memberi semangat kepada teman yang gugup.","Mengidentifikasi ungkapan yang menyatakan saran.","Memilih permintaan izin meminjam barang dengan bahasa yang sopan.","Memilih respons kolaboratif untuk menyelesaikan tugas kelompok tepat waktu.","Membedakan penggunaan raise sebagai kata kerja transitif dalam konteks meningkatkan kesadaran.","Memilih kosakata yang menunjukkan bukti yang kuat atau cukup banyak.","Mengenali struktur paralel dengan bentuk kata kerja yang konsisten.","Membedakan penggunaan despite dengan frasa nomina dan although dengan klausa.","Memilih topic sentence yang merangkum gagasan utama tentang manfaat membaca.","Memilih parafrasa yang mempertahankan makna pernyataan asli.","Mengidentifikasi posisi penulis dengan mempertimbangkan manfaat proyek kelompok dan syarat partisipasi yang adil."];
+function finishQuiz(force=false){
+  if(examFinished) return;
+  const name=document.getElementById('student').value.trim()||'Siswa';
+  const unanswered=answers.filter(x=>x===null).length;
+  if(unanswered>0 && !force && !confirm(`Masih ada ${unanswered} soal yang belum dijawab. Tetap lihat nilai?`)) return;
+  let correct=0;
+  questions.forEach((item,i)=>{
+    const ok=item.multi?sameSet(answers[i],item.a):answers[i]===item.a;
+    if(ok)correct++;
+  });
+  finalCorrect=correct;
+  resultMode=true;
+  examFinished=true;
+  if(timerInterval){ clearInterval(timerInterval); timerInterval=null; }
+  const timerNote=document.getElementById('timerNote');
+  if(timerNote) timerNote.textContent=timeRemaining<=0?'Waktu habis':'Ujian selesai';
+
+  const finishButton=document.querySelector('.finish');
+  if(finishButton){
+    finishButton.textContent='✓  Ujian Selesai';
+    finishButton.classList.add('finished');
+    finishButton.disabled=true;
+    finishButton.setAttribute('aria-disabled','true');
+  }
+
+  renderNav();
+  const score=Math.round(correct/questions.length*100);
+  document.getElementById('quizCard').style.display='none';
+  const result=document.getElementById('result');
+  result.classList.add('show');
+  let rows=questions.map((item,i)=>{
+    const ok=item.multi?sameSet(answers[i],item.a):answers[i]===item.a;
+    const chosen=answers[i]===null?'Belum dijawab':(Array.isArray(answers[i])?answers[i].map(x=>letters[x]).join(', '):letters[answers[i]]);
+    const key=Array.isArray(item.a)?item.a.map(x=>letters[x]).join(', '):letters[item.a];
+    return `<div class="review-item"><div><b>Soal ${i+1}</b> — ${ok?'<span class="correct">Benar</span>':'<span class="wrong">Salah</span>'}</div><div class="review-description">${descriptions[i]}</div><div>Jawaban: ${chosen} &nbsp; | &nbsp; Kunci: ${key}</div></div>`;
+  }).join('');
+  const wrong = questions.length - correct;
+  const answered = answers.filter(x=>x!==null).length;
+  result.innerHTML=`<div class="result-hero">
+    <p class="result-kicker">Ujian Saringan Masuk - Mata Uji Bahasa Inggris</p>
+    <h2>Hasil Try Out</h2>
+    <p class="result-name">Peserta: <b>${escapeHtml(name)}</b></p>
+    <div class="result-main">
+      <div class="score-ring">
+        <div class="score">${score}</div>
+        <small>NILAI</small>
+      </div>
+      <div class="result-summary">
+        <h3>${score>=75?'Hasil yang bagus!':'Tetap semangat belajar!'}</h3>
+        <p>${correct} dari ${questions.length} soal berhasil dijawab dengan benar.</p>
+      </div>
+    </div>
+  </div>
+  <div class="result-content">
+    <div class="result-stats">
+      <div class="stat"><div class="stat-label">Jawaban Benar</div><div class="stat-value">${correct}</div></div>
+      <div class="stat"><div class="stat-label">Jawaban Salah</div><div class="stat-value">${wrong}</div></div>
+      <div class="stat"><div class="stat-label">Terjawab</div><div class="stat-value">${answered} / ${questions.length}</div></div>
+    </div>
+    <div class="result-box">Nilai dihitung dari jumlah jawaban benar ÷ 30 × 100.</div>
+    <div class="review">
+      <div class="review-header"><h3>Review Jawaban</h3><span>30 soal</span></div>
+      ${rows}
+    </div>
+    <button class="finish reset" onclick="submitResultPDF()">Submit Hasil Try Out</button>
+  </div>`;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function pdfSafe(text){
+  return String(text)
+    .replace(/[–—]/g,'-').replace(/÷/g,'/').replace(/×/g,'x')
+    .replace(/°/g,' deg ').replace(/²/g,'2').replace(/³/g,'3')
+    .replace(/−/g,'-').replace(/≤/g,'<=').replace(/≥/g,'>=')
+    .replace(/[“”]/g,'"').replace(/[‘’]/g,"'")
+    .replace(/[^\x20-\x7E]/g,'');
+}
+
+function wrapPdf(text,maxChars){
+  const words=pdfSafe(text).split(/\s+/);
+  const lines=[];
+  let line='';
+  for(const word of words){
+    if((line+' '+word).trim().length>maxChars){
+      if(line) lines.push(line);
+      line=word;
+    }else{
+      line=(line+' '+word).trim();
+    }
+  }
+  if(line) lines.push(line);
+  return lines;
+}
+
+async function submitResultPDF(){
+  if(!examFinished) return;
+
+  const name=document.getElementById('student').value.trim()||'Siswa';
+  const now=new Date();
+  const stamp=now.toLocaleString('id-ID',{dateStyle:'long',timeStyle:'medium'});
+  const answered=answers.filter(x=>x!==null).length;
+  const wrong=questions.length-finalCorrect;
+  const unanswered=questions.length-answered;
+  const score=Math.round(finalCorrect/questions.length*100);
+  const materials=[
+    'Reading','Reading','Vocabulary','Text Types','Reading','Inference','Text Types','Reading','Connectors',
+    'Conditionals','Passive Voice','Reported Speech','Relative Clauses','Gerunds','Agreement',
+    'Purpose Clauses','Past Perfect','Passive Voice','Expressions','Speaking','Suggestions','Polite Requests','Collaboration',
+    'Vocabulary','Vocabulary','Sentence Structure','Conjunctions','Writing','Paraphrasing','Critical Thinking'
+  ];
+
+  // Minimal PDF drawing helpers. Coordinates use points, origin bottom-left.
+  const W=595, H=842, M=42;
+  const objects=[];
+  const addObject=c=>{objects.push(c);return objects.length;};
+  const catalogRef=addObject('');
+  const pagesRef=addObject('');
+  const fontRef=addObject('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>');
+  const boldRef=addObject('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>');
+  const pageRefs=[];
+  const pdfText=t=>pdfSafe(String(t)).replace(/\\/g,'\\\\').replace(/\(/g,'\\(').replace(/\)/g,'\\)');
+  const esc=t=>pdfText(t);
+  const hex=v=>v;
+  function rect(x,y,w,h,fill){return (fill?fill+' scn\n':'')+' '+x+' '+y+' '+w+' '+h+' re f\n';}
+  function line(x1,y1,x2,y2,stroke='0.86 0.88 0.92',lw=0.8){return stroke+' RG\n'+lw+' w\n'+x1+' '+y1+' m '+x2+' '+y2+' l S\n';}
+  function txt(x,y,text,size=10,bold=false,fill='0.12 0.16 0.22'){
+    return fill+' rg\nBT /F'+(bold?'B':'R')+' '+size+' Tf '+x+' '+y+' Td ('+esc(text)+') Tj ET\n';
+  }
+  function wrap(text,max){
+    const words=pdfSafe(String(text)).split(/\s+/); const out=[]; let line='';
+    words.forEach(word=>{ if((line+' '+word).trim().length>max){if(line)out.push(line);line=word;}else line=(line+' '+word).trim(); });
+    if(line)out.push(line); return out;
+  }
+  function addPage(stream){
+    const contentRef=addObject('<< /Length '+stream.length+' >>\nstream\n'+stream+'endstream');
+    const pageRef=addObject('<< /Type /Page /Parent '+pagesRef+' 0 R /MediaBox [0 0 '+W+' '+H+'] /Resources << /Font << /FR '+fontRef+' 0 R /FB '+boldRef+' 0 R >> >> /Contents '+contentRef+' 0 R >>');
+    pageRefs.push(pageRef);
+  }
+  function footer(stream,pageNo){
+    return stream+line(M,30,W-M,30,'0.86 0.88 0.92',0.6)+txt(M,16,'SMA Sekolah Alam Bandung',7,false,'0.42 0.46 0.52')+txt(W-M-45,16,'Hal. '+pageNo,7,false,'0.42 0.46 0.52');
+  }
+
+  // PAGE 1 - Assessment cover/report summary.
+  let s='';
+  s+=rect(0,0,W,H,'0.97 0.98 1');
+  s+=rect(0,H-118,W,118,'0.28 0.22 0.84');
+  s+=txt(M,H-48,'SMA SEKOLAH ALAM BANDUNG',11,true,'1 1 1');
+  s+=txt(M,H-75,'LAPORAN HASIL ASESMEN',22,true,'1 1 1');
+  s+=txt(M,H-97,'Ujian Saringan Masuk - Mata Uji Bahasa Inggris',10,false,'0.88 0.90 1');
+
+  s+=txt(M,678,'IDENTITAS PESERTA',9,true,'0.28 0.22 0.84');
+  s+=rect(M,575,W-2*M,88,'1 1 1');
+  s+=txt(M+16,637,'Nama Siswa',8,false,'0.42 0.46 0.52');
+  s+=txt(M+16,616,name,14,true,'0.10 0.14 0.20');
+  s+=txt(330,637,'Tanggal Asesmen',8,false,'0.42 0.46 0.52');
+  s+=txt(330,616,pdfSafe(stamp),10,true,'0.10 0.14 0.20');
+  s+=txt(M+16,592,'Mata Pelajaran: Bahasa Inggris',8,false,'0.42 0.46 0.52');
+  s+=txt(330,592,'Ujian Saringan Masuk - Mata Uji Bahasa Inggris',8,false,'0.42 0.46 0.52');
+
+  s+=txt(M,548,'RINGKASAN HASIL',9,true,'0.28 0.22 0.84');
+  s+=rect(M,390,155,135,'0.28 0.22 0.84');
+  s+=txt(M+16,495,'NILAI AKHIR',9,false,'0.84 0.86 1');
+  s+=txt(M+16,425,String(score),48,true,'1 1 1');
+  s+=txt(M+16,405,'dari 100',8,false,'0.84 0.86 1');
+  const statX=[215,330,445], statTitles=['BENAR','SALAH','TIDAK DIJAWAB'], statVals=[finalCorrect,wrong,unanswered], statColors=['0.91 0.98 0.95','1 0.94 0.95','0.95 0.96 0.98'];
+  statX.forEach((x,i)=>{s+=rect(x,390,100,135,statColors[i]);s+=txt(x+12,495,statTitles[i],7,true,'0.42 0.46 0.52');s+=txt(x+12,430,String(statVals[i]),28,true,i===0?'0.04 0.59 0.40':i===1?'0.86 0.12 0.30':'0.25 0.31 0.40');});
+
+  s+=txt(M,360,'INTERPRETASI HASIL',9,true,'0.28 0.22 0.84');
+  s+=rect(M,295,W-2*M,48,'1 1 1');
+  const interp=score>=85?'Penguasaan materi sangat baik dan menunjukkan kesiapan yang kuat.':score>=75?'Penguasaan materi baik, dengan beberapa bagian yang masih dapat diperkuat.':score>=60?'Penguasaan materi cukup; latihan terarah diperlukan pada beberapa kompetensi.':'Perlu penguatan konsep dasar dan latihan bertahap pada materi yang diujikan.';
+  s+=txt(M+14,320,'Catatan:',8,true,'0.28 0.22 0.84');
+  wrap(interp,78).forEach((t,i)=>s+=txt(M+62,320-i*12,t,8,false,'0.25 0.29 0.36'));
+
+  s+=txt(M,265,'DISTRIBUSI MATERI ASESMEN',9,true,'0.28 0.22 0.84');
+  const matGroups=[['Reading & Text Types',9],['Grammar & Language Features',9],['Functional Communication',5],['Vocabulary & Writing',7]];
+  let yy=235; matGroups.forEach(([label,count])=>{const pct=count/30; s+=txt(M,yy,label,8,true,'0.22 0.27 0.35');s+=rect(190,yy-2,270,8,'0.90 0.91 0.97');s+=rect(190,yy-2,270*pct,8,'0.28 0.22 0.84');s+=txt(475,yy,String(count)+' soal',8,false,'0.42 0.46 0.52');yy-=28;});
+  s+=txt(M,100,'Dokumen ini merupakan ringkasan hasil asesmen dan analisis jawaban peserta.',8,false,'0.42 0.46 0.52');
+  s=footer(s,1); addPage(s);
+
+  // PAGE 2+ - detailed analysis, with clean table cards.
+  let pageNo=2, y=785, stream='';
+  function startDetail(){let z='';z+=rect(0,0,W,H,'1 1 1');z+=txt(M,805,'ANALISIS HASIL ASESMEN',16,true,'0.28 0.22 0.84');z+=txt(M,786,'Review jawaban 30 soal - Mata Uji Bahasa Inggris',8,false,'0.42 0.46 0.52');return z;}
+  stream=startDetail(); y=750;
+  function drawRow(i){
+    const item=questions[i]; const ok=item.multi?sameSet(answers[i],item.a):answers[i]===item.a;
+    const chosen=answers[i]===null?'Belum dijawab':(Array.isArray(answers[i])?answers[i].map(x=>letters[x]).join(', '):letters[answers[i]]);
+    const key=Array.isArray(item.a)?item.a.map(x=>letters[x]).join(', '):letters[item.a];
+    const desc=descriptions[i]; const status=ok?'BENAR':'SALAH';
+    const rowH=88; const bg=ok?'0.97 0.99 0.98':'0.99 0.97 0.98';
+    stream+=rect(M,y-rowH,W-2*M,rowH,bg);
+    stream+=rect(M,y-rowH,5,rowH,ok?'0.04 0.59 0.40':'0.86 0.12 0.30');
+    stream+=txt(M+15,y-18,'SOAL '+String(i+1).padStart(2,'0'),8,true,'0.20 0.25 0.33');
+    stream+=txt(125,y-18,materials[i],8,false,'0.42 0.46 0.52');
+    stream+=txt(455,y-18,status,8,true,ok?'0.04 0.59 0.40':'0.86 0.12 0.30');
+    stream+=txt(M+15,y-38,'Jawaban: '+chosen,8,true,'0.18 0.22 0.28');
+    stream+=txt(235,y-38,'Kunci: '+key,8,true,'0.18 0.22 0.28');
+    let yy=y-58; wrap(desc,78).slice(0,2).forEach(t=>{stream+=txt(M+15,yy,t,7,false,'0.38 0.43 0.50');yy-=11;});
+    y-=rowH+8;
+  }
+  for(let i=0;i<questions.length;i++){
+    if(y<135){stream=footer(stream,pageNo);addPage(stream);pageNo++;stream=startDetail();y=750;}
+    drawRow(i);
+  }
+  stream=footer(stream,pageNo);addPage(stream);
+
+  objects[pagesRef-1]='<< /Type /Pages /Kids ['+pageRefs.map(r=>r+' 0 R').join(' ')+'] /Count '+pageRefs.length+' >>';
+  objects[catalogRef-1]='<< /Type /Catalog /Pages '+pagesRef+' 0 R >>';
+
+  let pdf='%PDF-1.4\n'; const offsets=[0];
+  objects.forEach((obj,index)=>{offsets.push(pdf.length);pdf+=(index+1)+' 0 obj\n'+obj+'\nendobj\n';});
+  const xrefOffset=pdf.length; pdf+='xref\n0 '+(objects.length+1)+'\n0000000000 65535 f \n';
+  for(let i=1;i<offsets.length;i++) pdf+=String(offsets[i]).padStart(10,'0')+' 00000 n \n';
+  pdf+='trailer\n<< /Size '+(objects.length+1)+' /Root '+catalogRef+' 0 R >>\nstartxref\n'+xrefOffset+'\n%%EOF';
+
+  const blob=new Blob([pdf],{type:'application/pdf'}); const url=URL.createObjectURL(blob);
+  const safeName=pdfSafe(name).replace(/[^A-Za-z0-9_-]+/g,'_').replace(/^_+|_+$/g,'');
+  const filename='Assessment_USM_Bahasa_Inggris_'+(safeName||'Siswa')+'.pdf';
+
+  // Download locally as before.
+  const link=document.createElement('a'); link.href=url; link.download=filename; document.body.appendChild(link); link.click(); link.remove();
+
+  // Send the same PDF to the school email through Google Apps Script.
+  // Replace this URL after deploying the Apps Script as a Web App.
+  const EMAIL_WEB_APP_URL='https://script.google.com/macros/s/AKfycbwU5Dy9Q1xB9pA8_GTbr6sIjs8rTKkFdZRKbJxKCyhmIU2FV_Q9FkzmWW2muuHUSiem/exec';
+  if(EMAIL_WEB_APP_URL.indexOf('PASTE_YOUR_')===0){
+    alert('PDF sudah dibuat dan diunduh.\n\nPengiriman email belum aktif karena URL Google Apps Script belum dipasang.');
+  }else{
+    const bytes=new Uint8Array(await blob.arrayBuffer());
+    let binary=''; const chunk=0x8000;
+    for(let i=0;i<bytes.length;i+=chunk) binary+=String.fromCharCode(...bytes.subarray(i,Math.min(i+chunk,bytes.length)));
+    const base64=btoa(binary);
+    const payload=JSON.stringify({
+      recipient:'auliaassyifa0201@gmail.com',
+      subject:'Hasil Asesmen - Ujian Saringan Masuk - Mata Uji Bahasa Inggris - '+name,
+      studentName:name,
+      filename:filename,
+      pdfBase64:base64,
+      score:score,
+      correct:finalCorrect,
+      wrong:wrong,
+      unanswered:unanswered,
+      assessedAt:stamp
+    });
+    const iframe=document.createElement('iframe'); iframe.name='emailSubmitFrame_'+Date.now(); iframe.style.display='none'; document.body.appendChild(iframe);
+    const form=document.createElement('form'); form.method='POST'; form.action=EMAIL_WEB_APP_URL; form.target=iframe.name; form.style.display='none';
+    const input=document.createElement('input'); input.type='hidden'; input.name='payload'; input.value=payload; form.appendChild(input); document.body.appendChild(form); form.submit();
+    setTimeout(()=>{iframe.remove();form.remove();},15000);
+    alert('PDF sudah dibuat, diunduh, dan dikirim ke auliaassyifa0201@gmail.com.');
+  }
+  setTimeout(()=>URL.revokeObjectURL(url),3000);
+
+  const submitButton=document.querySelector('.reset'); if(submitButton){submitButton.textContent='✓  Hasil Sudah Disubmit';submitButton.classList.add('finished');submitButton.disabled=true;}
+}
+
+function escapeHtml(s){
+  return s.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+}
+renderQuestion();
+startTimer();
+</script>
+</body>
+</html>
